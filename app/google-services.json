@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "542454255280",
+    "firebase_url": "https://casperchat865.firebaseio.com",
+    "project_id": "casperchat865",
+    "storage_bucket": "casperchat865.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:542454255280:android:cfcf1276199642a8",
+        "android_client_info": {
+          "package_name": "com.emir.casperchat_865"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "542454255280-1u5ig99amois9ptom0i83egvo3n6kqop.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.emir.casperchat_865",
+            "certificate_hash": "1efe003a36585e1fbd41fed6d38714306ed108d6"
+          }
+        },
+        {
+          "client_id": "542454255280-8hsm6g45cuiiinmhspbc4saac8mp1r6v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQc7MvCDHTf83MoWsFb5suA6Y9likhsGw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "542454255280-8hsm6g45cuiiinmhspbc4saac8mp1r6v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
