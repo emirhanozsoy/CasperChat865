@@ -13,6 +13,8 @@
     <string name="new_pass">New Password</string>
     <string name="title_activity_profile">Firebase</string>
     <string name="hint_email">Email</string>
+    <string name="add_friend_button">Add Friend</string>
+    <string name="chooseUsername">Choose Username</string>
     <string name="hint_password">Password</string>
     <string name="hint_name">Fullname</string>
     <string name="btn_login">LOGIN</string>
@@ -28,6 +30,8 @@
     <string name="btn_remove">Remove</string>
     <string name="btn_sign_out">Sign Out</string>
     <string name="lbl_forgot_password">Forgot password?</string>
+    <string name="friends_navigation">Friends</string>
+    <string name="message_content">Message</string>
     <string name="forgot_password_msg">We just need your registered Email Id to sent you password reset instructions.</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

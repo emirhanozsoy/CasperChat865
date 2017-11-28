@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/changeUserName"
+        android:title="Change Username">
+    </item>
+    <item android:id="@+id/addImage"
+        android:title="Choose Pic">
+    </item>
+    <item android:id="@+id/addFriend"
+        android:title="Add Friend">
+    </item>
+    <item android:id="@+id/logout"
+        android:title="Log Out">
+    </item>
+
+</menu>
