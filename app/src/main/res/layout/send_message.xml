@@ -3,14 +3,13 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <TextView
-        android:text="Send Message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView"
-        android:textSize="15pt"
-        android:textAlignment="center"
-        android:textColor="@color/colorPrimary"/>
+        android:textSize="20pt"
+        android:id="@+id/textviewone"
+        android:text="SEND MESSAGE"/>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -19,12 +18,14 @@
         android:layout_margin="10px"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp">
+
         <EditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/message_text"
             android:paddingLeft="10px"
             android:paddingRight="10px"/>
+
     </android.support.design.widget.TextInputLayout>
 
     <Button

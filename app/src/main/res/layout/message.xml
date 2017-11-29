@@ -3,14 +3,15 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
+    <TextView
         android:text=""
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textView2"
         android:textSize="15pt"
         android:textAlignment="center"
-        android:textColor="@color/colorPrimary"/>
+        android:textColor="@color/colorPrimary"
+        />
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -36,4 +37,12 @@
         android:layout_marginLeft="20pt"
         android:layout_marginRight="20pt"
         />
+
+    <ProgressBar
+        android:id="@+id/progressBarmessage"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="20dp"
+        android:visibility="gone" />
 </LinearLayout>

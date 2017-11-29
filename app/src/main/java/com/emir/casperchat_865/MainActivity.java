@@ -1,11 +1,14 @@
 package com.emir.casperchat_865;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -36,10 +39,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -75,17 +80,25 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> Chatlist;
     private customListAdapter adap2;
     ArrayAdapter<String > arrayAdapter;
-    String friendImgLink;
+    public static String friendImgLink;
     String userName2;
     String text;
-    private List<customChatadapter> mListadapter2;
+    String buffer;
+    EditText chattextoo;
+    String textt;
+    String usrname;
+    String person;
+    NotificationCompat.Builder notification;
 
+    private List<customChatadapter> mListadapter2;
+    private ProgressBar progressBarmessage;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
         MenuInflater menuInflater=getMenuInflater();
         menuInflater.inflate(R.menu.my_menu,menu);
+        menuInflater.inflate(R.menu.menu,menu);
         return true;
 
     }
@@ -174,6 +187,11 @@ public class MainActivity extends AppCompatActivity {
             signOut();
 
         }
+        else if(item.getItemId()==R.id.action_camera){
+            Intent galeriINTENT=new Intent(Intent.ACTION_PICK);
+            galeriINTENT.setType("image/*");
+            startActivityForResult(galeriINTENT,GALERI_INDEX);
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -220,15 +238,41 @@ public class MainActivity extends AppCompatActivity {
         final String childurl="to_"+mAuth.getCurrentUser().getEmail().toString().substring(0,mAuth.getCurrentUser().getEmail().toString().indexOf("@"));
         refTo=messageRef.child("to_"+mAuth.getCurrentUser().getEmail().toString().substring(0,mAuth.getCurrentUser().getEmail().toString().indexOf("@")));
         refMsg=refTo.child("message");
-
         Chatlist = new ArrayList<>();
-
         mListadapter2 = new ArrayList<>();
-
         adap2= new customListAdapter(getApplicationContext(), mListadapter2);
         listViewchat=(ListView) findViewById(R.id.listview_chat);
         listViewchat.setAdapter(arrayAdapter);
+        notification = new NotificationCompat.Builder(this);
+        notification.setAutoCancel(true);
 
+
+        final CircleImageView profilepic=(CircleImageView)findViewById(R.id.profile_pic);
+        final TextView profilusername=(TextView)findViewById(R.id.profile_username);
+        mRef.orderByChild("mail").equalTo(mAuth.getCurrentUser().getEmail())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                            Map<String, String> mapUsername = (Map<String, String>) postSnapshot.getValue();
+
+                            usrname=mapUsername.get("userName");
+                            person=mapUsername.get("userImage");
+                            Uri myUri=Uri.parse(person);
+                            Picasso.with(MainActivity.this)
+                                    .load(myUri)
+                                    .into(profilepic);
+                            profilusername.setText(usrname.toUpperCase());
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_SHORT).show();
+                    }
+                });
 
 
 
@@ -238,87 +282,142 @@ public class MainActivity extends AppCompatActivity {
            public void onDataChange(DataSnapshot dataSnapshot) {
                Chatlist.clear();
                mListadapter2.clear();
+               notification.setSmallIcon(R.drawable.ghosticon);
+               notification.setTicker("ticker");
+               notification.setWhen(System.currentTimeMillis());
+               notification.setContentTitle("Casp");
+               notification.setContentText("New Message");
+               Toast.makeText(getApplicationContext(),"********",Toast.LENGTH_SHORT);
+               Intent noti=new Intent(MainActivity.this,MainActivity.class);
+               PendingIntent pendingIntent=PendingIntent.getActivity(MainActivity.this,0,noti,PendingIntent.FLAG_UPDATE_CURRENT);
+
+               notification.setContentIntent(pendingIntent);
+
+               NotificationManager nm =(NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
                DataSnapshot ds_Chat=dataSnapshot.child("from");
                for (DataSnapshot dsChat2: ds_Chat.getChildren()){
+
                    final String chattext =dsChat2.getValue().toString();
-                   mRef.orderByChild("mail").equalTo(chattext)
+                   //final String textt=chattext.substring(chattext.indexOf("_"),chattext.indexOf("__"));
+                   final String fromm=chattext.substring(0,chattext.indexOf("_"));
+                   final String timee=chattext.substring(chattext.indexOf("__"),chattext.length()-1);
+                   final String mailson=fromm+"@gmail.com";
+                   //Toast.makeText(getApplicationContext(),friendImgLink,Toast.LENGTH_SHORT).show();
+                   mRef.orderByChild("mail").equalTo(mailson)
                            .addValueEventListener(new ValueEventListener() {
                                @Override
                                public void onDataChange(DataSnapshot dataSnapshot) {
                                    for (DataSnapshot dsFriendDetail: dataSnapshot.getChildren()){
-
                                        Map<String, String> mapFriendDetail = (Map<String ,String>)dsFriendDetail.getValue();
+
                                        friendImgLink = mapFriendDetail.get("userImage");
                                        //Toast.makeText(getApplicationContext(),friendImgLink,Toast.LENGTH_SHORT).show();
-                                       //Toast.makeText(getApplicationContext(),chattext,Toast.LENGTH_SHORT).show();
-                                       mListadapter2.add(0, new customChatadapter(chattext,friendImgLink));
+                                       //mListadapter2.add(0, new customChatadapter(chattext,friendImgLink));
                                    }
                                    listViewchat.invalidateViews();
                                }
                                @Override
                                public void onCancelled(DatabaseError databaseError) {
                                }
-                           });
-                    //mListadapter2.add(0, new customChatadapter(chattext,friendImgLink));
+                            });
+                    //Toast.makeText(getApplicationContext(),friendImgLink,Toast.LENGTH_SHORT).show();
+                    mListadapter2.add(0, new customChatadapter(fromm,friendImgLink));
+                   listViewchat.invalidateViews();
                }
                listViewchat.setAdapter(adap2);
+               listViewchat.invalidateViews();
+               nm.notify(uniqeID,notification.build());
            }
+
            @Override
            public void onCancelled(DatabaseError databaseError) {
            }
        });
-
+        //Toast.makeText(getApplicationContext(),friendImgLink,Toast.LENGTH_SHORT).show();
         final AlertDialog.Builder mBuilder1 = new AlertDialog.Builder(this);
         listViewchat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
 
-                View dialogView = getLayoutInflater().inflate(R.layout.send_message,null);
+                View dialogView = getLayoutInflater().inflate(R.layout.message,null);
                 mBuilder1.setView(dialogView);
                 final AlertDialog dialogAddNewFriend= mBuilder1.create();
                 dialogAddNewFriend.show();
-                final  TextView tvFriendMail=(TextView)view.findViewById(R.id.textView2FrienMail);
-                final EditText et_message_text = (EditText)dialogView.findViewById(R.id.message_text);
-                Button btn_send_message =(Button)dialogView.findViewById(R.id.send_message);
-                DatabaseReference ref3 =FirebaseDatabase.getInstance().getReference("messaging").child("messages").child(childurl);
+                //chattextoo=(EditText) view.findViewById(R.id.textView);
+                final TextView newtextview = (TextView) dialogView.findViewById(R.id.textView2);
+                final EditText et_message_text = (EditText)dialogView.findViewById(R.id.reply_message_content);
+                final Button btn_send_message =(Button)dialogView.findViewById(R.id.reply_message);
+                final  TextView tvFriendMail=(TextView)view.findViewById(R.id.txtMessage);
+                progressBarmessage = (ProgressBar) dialogView.findViewById(R.id.progressBarmessage);
+
+                final DatabaseReference ref3 =FirebaseDatabase.getInstance().getReference("messaging").child("messages").child(childurl);
                 ref3.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         DataSnapshot ds_Chat=dataSnapshot.child("from");
                         for (DataSnapshot dsChat2: ds_Chat.getChildren()){
                             final String chattext =dsChat2.getValue().toString();
-                            mRef.orderByChild("message").equalTo(chattext)
-                                    .addValueEventListener(new ValueEventListener() {
+                            textt=chattext.substring(chattext.indexOf("_")+1,chattext.indexOf("__"));
+                            final String fromm=chattext.substring(0,chattext.indexOf("_"));
+                            //final String timee=chattext.substring(chattext.indexOf("__"),chattext.length());
+                            newtextview.setText(textt);
+                            final String message1=et_message_text.getText().toString();
+
+                            /*
+                                       messageRef.child("messages").child("to_"+parsed).child("message").push().setValue(message);
+                                     //messageRef.child("messages").child("to").push().setValue(tvFriendMail.getText().toString());
+                                       messageRef.child("messages").child("to_"+parsed).child("time").push().setValue(currentTime.toString().substring(10,16));
+                                        */
+
+                            progressBarmessage.setVisibility(View.VISIBLE);
+                            btn_send_message.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Date currentTime = Calendar.getInstance().getTime();
+                                    String message1=et_message_text.getText().toString();
+                                    messageRef.child("messages").child("to_"+tvFriendMail.getText().toString()).child("from").push().setValue(tvFriendMail.getText().toString() + "_" + message1 + "__"+  currentTime.toString().substring(11,16));
+
+                                    String message=et_message_text.getText().toString();
+                                    Toast.makeText(getApplicationContext(),chattext,Toast.LENGTH_SHORT).show();
+
+                                    Query delete =ref3.child("from").orderByValue().equalTo(chattext);
+                                    delete.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
-                                            for (DataSnapshot dsFriendDetail: dataSnapshot.getChildren()){
-                                                text =dsFriendDetail.getValue().toString();
+                                            for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
+                                                appleSnapshot.getRef().removeValue();
                                             }
                                         }
+
                                         @Override
                                         public void onCancelled(DatabaseError databaseError) {
+
                                         }
                                     });
+
+                                    dialogAddNewFriend.hide();
+                                    progressBarmessage.setVisibility(View.GONE);
+                                    et_message_text.setText("");
+                                }
+                            });
                         }
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                     }
                 });
-                et_message_text.setText(text);
-                btn_send_message.setOnClickListener(new View.OnClickListener() {
+
+                /*btn_send_message.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Date d = new Date();
-
                         Date currentTime = Calendar.getInstance().getTime();
-
                         String message=et_message_text.getText().toString();
 
-                        et_message_text.setText("selam");
+
 
                     }
-                });
+                });*/
             }
         });
     /*  final AlertDialog.Builder mBuilder1 = new AlertDialog.Builder(this);
@@ -391,11 +490,12 @@ public class MainActivity extends AppCompatActivity {
 
                         String message=et_message_text.getText().toString();
 
-                        messageRef.child("messages").child("to_"+parsed).child("from").push().setValue(mAuth.getCurrentUser().getEmail());
+                        messageRef.child("messages").child("to_"+parsed).child("from").push().setValue(mAuth.getCurrentUser().getEmail().toString().substring(0,mAuth.getCurrentUser().getEmail().toString().indexOf("@")) + "_" + message + "__"+  currentTime.toString().substring(11,16));
+                        /*
                         messageRef.child("messages").child("to_"+parsed).child("message").push().setValue(message);
                         //messageRef.child("messages").child("to").push().setValue(tvFriendMail.getText().toString());
                         messageRef.child("messages").child("to_"+parsed).child("time").push().setValue(currentTime.toString().substring(10,16));
-
+                        */
                         et_message_text.setText("");
                         dialogAddNewFriend.hide();
 
@@ -436,6 +536,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+
+
 
         btnChangeEmail = (Button) findViewById(R.id.change_email_button);
         btnChangePassword = (Button) findViewById(R.id.change_password_button);
