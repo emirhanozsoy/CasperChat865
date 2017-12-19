@@ -6,14 +6,17 @@
 
     <ImageView
         android:id="@+id/friendpic"
-        android:layout_width="50px"
-        android:layout_height="50px" />
+        android:layout_width="250px"
+        android:layout_height="250px" />
+
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+
         android:id="@+id/txtMessage"
-        android:layout_marginTop="10px"
-        android:layout_marginLeft="10px"
-        android:layout_marginRight="10px"
-        android:textColor="@color/colorPrimaryDark"/>
+        android:layout_width="250dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="25dp"
+        android:textStyle="bold"
+        android:fontFamily="@font/acme"
+        android:textColor="@color/black" />
 </LinearLayout>

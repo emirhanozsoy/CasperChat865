@@ -52,10 +52,11 @@ public class customListAdapter extends BaseAdapter {
         ImageView imgUser =(ImageView)v.findViewById(R.id.friendpic);
 
         tvMsgText.setText(mAdapterList2.get(i).getS_name());
-        Picasso.with(mContext)
+       /* Picasso.with(mContext)
                 .load(mAdapterList2.get(i).getS_image())
                 .resize(50,50)
-                .into(imgUser);
+                .into(imgUser);*/
+       imgUser.setImageResource(R.drawable.foto2);
 
       /*  if(mAdapterList2.get(i).getS_username()=="sen"){
             tvMsgText.setTextColor(Color.GREEN);

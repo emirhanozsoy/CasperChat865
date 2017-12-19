@@ -4,14 +4,19 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:text="Choose Username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView"
-        android:textSize="15pt"
-        android:textAlignment="center"
-        android:textColor="@color/colorPrimary"/>
+        android:text="" />
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/acme"
+        android:text="Choose Username"
+        android:textAlignment="center"
+        android:textColor="@color/casper_red"
+        android:textSize="15pt" />
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,20 +25,30 @@
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
         >
+
         <EditText
+            android:id="@+id/userName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/userName"
+            android:fontFamily="@font/acme"
             android:paddingLeft="10px"
-            android:paddingRight="10px"/>
+            android:paddingRight="10px" />
     </android.support.design.widget.TextInputLayout>
 
     <Button
+        android:id="@+id/changeUserName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Change"
-        android:id="@+id/changeUserName"
         android:layout_marginLeft="20pt"
         android:layout_marginRight="20pt"
-        />
+        android:textColor="@color/white"
+        android:background="@color/casper_red"
+        android:fontFamily="@font/acme"
+        android:text="Change"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="" />
 </LinearLayout>

@@ -3,6 +3,7 @@ package com.emir.casperchat_865;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -52,6 +53,8 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
 
+
+        final AlertDialog.Builder mBuilder1 = new AlertDialog.Builder(this);
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,6 +77,7 @@ public class SignupActivity extends AppCompatActivity {
                     return;
                 }
 
+
                 progressBar.setVisibility(View.VISIBLE);
                 //create user
                 auth.createUserWithEmailAndPassword(email, password)
@@ -81,7 +85,13 @@ public class SignupActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 // Toast.makeText(SignupActivity.this, "createUserWithEmail:onComplete:" + task.isSuccessful(), Toast.LENGTH_SHORT).show();
+
+
                                 Toast.makeText(SignupActivity.this, "First things first go choose an Username :)", Toast.LENGTH_LONG).show();
+
+
+
+
                                 progressBar.setVisibility(View.GONE);
                                 // If sign in fails, display a message to the user. If sign in succeeds
                                 // the auth state listener will be notified and logic to handle the
@@ -90,13 +100,27 @@ public class SignupActivity extends AppCompatActivity {
                                     Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException(),
                                             Toast.LENGTH_SHORT).show();
                                 } else {
-                                    startActivity(new Intent(SignupActivity.this, LoginActivity.class));
-                                    finish();
+                                    View dialogView = getLayoutInflater().inflate(R.layout.warning,null);
+                                    mBuilder1.setView(dialogView);
+                                    final AlertDialog dialogAddNewFriend= mBuilder1.create();
+                                    dialogAddNewFriend.show();
+                                    Button btn_warning =(Button)dialogView.findViewById(R.id.warning_close);
+
+                                    btn_warning.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+                                            finish();
+                                        }
+                                    });
+
                                 }
                             }
                         });
 
             }
+
+
         });
     }
 

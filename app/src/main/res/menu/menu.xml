@@ -4,7 +4,7 @@
 
     <item android:id="@+id/action_camera"
         android:title="Change Username"
-        android:icon="@drawable/smalcam"
+        android:icon="@drawable/smallcamera"
         app:showAsAction="always">
     </item>
 </menu>

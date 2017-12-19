@@ -25,8 +25,11 @@
         <activity android:name=".SignupActivity" />
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main" />
-        <activity android:name=".ResetPasswordActivity"></activity>
+            android:label="CasperChat-865"
+            android:fontFamily="@font/acme"
+            />
+        <activity android:name=".ResetPasswordActivity" />
+        <activity android:name=".ChooseFriend"></activity>
     </application>
 
 </manifest>

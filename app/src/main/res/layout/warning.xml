@@ -13,8 +13,8 @@
         android:fontFamily="@font/acme"
         android:textAlignment="center"
         android:textColor="@color/casper_red"
-
-        android:text="Here is your message!" />
+        android:textSize="15pt"
+        android:text="Hey, Go and Choose Profile Pic and Username." />
 
     <TextView
         
@@ -44,29 +44,8 @@
             />
     </LinearLayout>
 
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/message_content"
-        android:fontFamily="font/acme"
-        android:layout_margin="10px"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:id="@+id/textInputLayout">
-
-        <EditText
-            android:id="@+id/reply_message_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fontFamily="@font/acme"
-            android:paddingLeft="10px"
-            android:paddingRight="10px" />
-    </android.support.design.widget.TextInputLayout>
-
-
     <Button
-        android:id="@+id/reply_message"
+        android:id="@+id/warning_close"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -74,7 +53,7 @@
         android:background="@color/casper_red"
         android:textColor="@color/white"
         android:fontFamily="font/acme"
-        android:text="@string/btn_send" />
+        android:text="@string/btn_warning" />
 
 </LinearLayout>
 

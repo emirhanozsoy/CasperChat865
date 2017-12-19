@@ -19,11 +19,16 @@
         android:id="@+id/textView2FrienMail"
         android:layout_width="250dp"
         android:layout_height="28dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="35dp"
+        android:fontFamily="@font/acme"
+        android:textStyle="bold"
         android:text="TextView"
         android:textAlignment="center"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/black"
         app:layout_constraintStart_toEndOf="@+id/imageViewFriend"
         app:layout_constraintTop_toTopOf="parent" />
+
+
+
 </android.support.constraint.ConstraintLayout>

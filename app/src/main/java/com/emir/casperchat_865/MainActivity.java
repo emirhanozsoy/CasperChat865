@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -49,6 +50,7 @@ import com.squareup.picasso.Picasso;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -66,8 +68,9 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private FirebaseAuth.AuthStateListener authListener;
     private FirebaseAuth auth;
+    private String userNamee;
     String friendMail,userName;
-    LinearLayout ly_linear,ly_linear_friends,ly_linear_chat;
+    LinearLayout ly_linear,ly_linear_friends,ly_linear_chat,ly_photo;
     private FirebaseAuth mAuth;
     ListView listviewFriend,listViewchat;
     private static final int uniqeID=2134;
@@ -77,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
     DatabaseReference mRef,userRef, mailRef, imageRef,userNameRef,messageRef,refTo,refMsg;
     private final static int GALERI_INDEX=2;
+    private final static int GALERI_INDEX2=3;
     ArrayList<String> Chatlist;
     private customListAdapter adap2;
     ArrayAdapter<String > arrayAdapter;
@@ -89,7 +93,9 @@ public class MainActivity extends AppCompatActivity {
     String usrname;
     String person;
     NotificationCompat.Builder notification;
-
+    List<String> texts = new ArrayList<String>();
+    String[] strings = new String[texts.size()];
+    String oppositeusername;
     private List<customChatadapter> mListadapter2;
     private ProgressBar progressBarmessage;
 
@@ -119,15 +125,49 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if(!et_username.getText().toString().isEmpty()){
 
+                        userRef = mRef.child(mAuth.getCurrentUser().getUid().toString());
+                        userNameRef=userRef.child("userName");
+                        mailRef =userRef.child("mail");
                         userName= et_username.getText().toString();
                         et_username.setText("");
                         dialogAddNewFriend.hide();
-
-                        userRef = mRef.child(mAuth.getCurrentUser().getUid().toString());
-                        mailRef =userRef.child("mail");
                         mailRef.setValue(mAuth.getCurrentUser().getEmail());
-                        userNameRef=userRef.child("userName");
                         userNameRef.setValue(userName);
+                        
+                        //Query delete = mRef.child(mAuth.getCurrentUser().getUid().toString()).child("userName").orderByValue().equalTo(et_username.getText().toString().trim());
+                        /* mRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot appleSnapshot : dataSnapshot.getChildren()) {
+                                    if(et_username.getText().toString().equals(appleSnapshot.child("userName").getValue())){
+                                        Toast.makeText(getApplicationContext(),"Aynı",Toast.LENGTH_SHORT).show();
+                                    }
+                                    else{
+                                        userRef = mRef.child(mAuth.getCurrentUser().getUid().toString());
+                                        userNameRef=userRef.child("userName");
+                                        mailRef =userRef.child("mail");
+                                        userName= et_username.getText().toString();
+                                        et_username.setText("");
+                                        dialogAddNewFriend.hide();
+                                        mailRef.setValue(mAuth.getCurrentUser().getEmail());
+                                        userNameRef.setValue(userName);
+                                    }
+
+                                    /*appleSnapshot.getRef();
+                                    userName= et_username.getText().toString();
+                                    et_username.setText("");
+                                    dialogAddNewFriend.hide();
+                                    mailRef.setValue(mAuth.getCurrentUser().getEmail());
+                                    userNameRef.setValue(userName);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });*/
+
 
                     }
                 }
@@ -188,9 +228,32 @@ public class MainActivity extends AppCompatActivity {
 
         }
         else if(item.getItemId()==R.id.action_camera){
-            Intent galeriINTENT=new Intent(Intent.ACTION_PICK);
-            galeriINTENT.setType("image/*");
-            startActivityForResult(galeriINTENT,GALERI_INDEX);
+
+            Intent galeriINTENT2=new Intent(Intent.ACTION_PICK);
+            galeriINTENT2.setType("image/*");
+            startActivityForResult(galeriINTENT2,GALERI_INDEX2);
+            /*   AlertDialog.Builder mBuilder10 = new AlertDialog.Builder(this);
+            View dialogView = getLayoutInflater().inflate(R.layout.choose_photo,null);
+            mBuilder10.setView(dialogView);
+            final AlertDialog dialogAddNewFriend= mBuilder10.create();
+            dialogAddNewFriend.show();
+            Button btn_choose_photo =(Button)dialogView.findViewById(R.id.choose_photo_from_gallery);
+            btn_choose_photo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent galeriINTENT2=new Intent(Intent.ACTION_PICK);
+                    galeriINTENT2.setType("image/*");
+                    startActivityForResult(galeriINTENT2,GALERI_INDEX2);
+                }
+            });
+            Button btn_take_photo =(Button)dialogView.findViewById(R.id.take_photo);
+            btn_choose_photo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });*/
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -222,6 +285,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -235,9 +299,13 @@ public class MainActivity extends AppCompatActivity {
         messageRef=FirebaseDatabase.getInstance().getReference("messaging");
         mRef= FirebaseDatabase.getInstance().getReference("allUsers");
         mListadapter =new ArrayList<>();
-        final String childurl="to_"+mAuth.getCurrentUser().getEmail().toString().substring(0,mAuth.getCurrentUser().getEmail().toString().indexOf("@"));
-        refTo=messageRef.child("to_"+mAuth.getCurrentUser().getEmail().toString().substring(0,mAuth.getCurrentUser().getEmail().toString().indexOf("@")));
-        refMsg=refTo.child("message");
+
+
+
+
+        //final String childurl="to_"+mAuth.getCurrentUser().getEmail().toString().substring(0,mAuth.getCurrentUser().getEmail().toString().indexOf("@"));
+        //refTo=messageRef.child("to_"+mAuth.getCurrentUser().getEmail().toString().substring(0,mAuth.getCurrentUser().getEmail().toString().indexOf("@")));
+        //refMsg=refTo.child("message");
         Chatlist = new ArrayList<>();
         mListadapter2 = new ArrayList<>();
         adap2= new customListAdapter(getApplicationContext(), mListadapter2);
@@ -249,6 +317,8 @@ public class MainActivity extends AppCompatActivity {
 
         final CircleImageView profilepic=(CircleImageView)findViewById(R.id.profile_pic);
         final TextView profilusername=(TextView)findViewById(R.id.profile_username);
+
+        final TextView usernameshit=(TextView) findViewById(R.id.deneme);
         mRef.orderByChild("mail").equalTo(mAuth.getCurrentUser().getEmail())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -257,13 +327,18 @@ public class MainActivity extends AppCompatActivity {
                         for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
                             Map<String, String> mapUsername = (Map<String, String>) postSnapshot.getValue();
 
+
                             usrname=mapUsername.get("userName");
                             person=mapUsername.get("userImage");
                             Uri myUri=Uri.parse(person);
+
                             Picasso.with(MainActivity.this)
                                     .load(myUri)
                                     .into(profilepic);
+
                             profilusername.setText(usrname.toUpperCase());
+                            //Toast.makeText(getApplicationContext(), usrname, Toast.LENGTH_SHORT).show();
+                            usernameshit.setText(usrname);
 
                         }
                     }
@@ -275,19 +350,28 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 
-
-       DatabaseReference ref2 =FirebaseDatabase.getInstance().getReference("messaging").child("messages").child(childurl);
+        mRef.orderByChild("mail").equalTo(mAuth.getCurrentUser().getEmail())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                            Map<String, String> mapUsername = (Map<String, String>) postSnapshot.getValue();
+                            final String childurl="to_"+usrname;
+        //refTo=messageRef.child("to_"+mAuth.getCurrentUser().getEmail().toString().substring(0,mAuth.getCurrentUser().getEmail().toString().indexOf("@")));
+        //Toast.makeText(getApplicationContext(), childurl, Toast.LENGTH_SHORT).show();
+        DatabaseReference ref2 =FirebaseDatabase.getInstance().getReference("messaging").child("messages").child(childurl);
        ref2.addValueEventListener(new ValueEventListener() {
            @Override
            public void onDataChange(DataSnapshot dataSnapshot) {
                Chatlist.clear();
                mListadapter2.clear();
+
                notification.setSmallIcon(R.drawable.ghosticon);
                notification.setTicker("ticker");
                notification.setWhen(System.currentTimeMillis());
                notification.setContentTitle("Casp");
                notification.setContentText("New Message");
-               Toast.makeText(getApplicationContext(),"********",Toast.LENGTH_SHORT);
+               //Toast.makeText(getApplicationContext(),"********",Toast.LENGTH_SHORT);
                Intent noti=new Intent(MainActivity.this,MainActivity.class);
                PendingIntent pendingIntent=PendingIntent.getActivity(MainActivity.this,0,noti,PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -299,11 +383,16 @@ public class MainActivity extends AppCompatActivity {
                for (DataSnapshot dsChat2: ds_Chat.getChildren()){
 
                    final String chattext =dsChat2.getValue().toString();
-                   //final String textt=chattext.substring(chattext.indexOf("_"),chattext.indexOf("__"));
+                   final String textt=chattext.substring(chattext.indexOf("_"),chattext.indexOf("__"));
                    final String fromm=chattext.substring(0,chattext.indexOf("_"));
                    final String timee=chattext.substring(chattext.indexOf("__"),chattext.length()-1);
-                   final String mailson=fromm+"@gmail.com";
+                   final String mailson=fromm;
+                   texts.add(0, textt);
+                   //Collections.reverse(texts);
+
+                   strings = texts.toArray(strings);
                    //Toast.makeText(getApplicationContext(),friendImgLink,Toast.LENGTH_SHORT).show();
+
                    mRef.orderByChild("mail").equalTo(mailson)
                            .addValueEventListener(new ValueEventListener() {
                                @Override
@@ -312,6 +401,7 @@ public class MainActivity extends AppCompatActivity {
                                        Map<String, String> mapFriendDetail = (Map<String ,String>)dsFriendDetail.getValue();
 
                                        friendImgLink = mapFriendDetail.get("userImage");
+
                                        //Toast.makeText(getApplicationContext(),friendImgLink,Toast.LENGTH_SHORT).show();
                                        //mListadapter2.add(0, new customChatadapter(chattext,friendImgLink));
                                    }
@@ -322,9 +412,10 @@ public class MainActivity extends AppCompatActivity {
                                }
                             });
                     //Toast.makeText(getApplicationContext(),friendImgLink,Toast.LENGTH_SHORT).show();
-                    mListadapter2.add(0, new customChatadapter(fromm,friendImgLink));
+                    mListadapter2.add(0,new customChatadapter(fromm,friendImgLink));
                    listViewchat.invalidateViews();
                }
+               //Collections.reverse(texts);
                listViewchat.setAdapter(adap2);
                listViewchat.invalidateViews();
                nm.notify(uniqeID,notification.build());
@@ -334,11 +425,21 @@ public class MainActivity extends AppCompatActivity {
            public void onCancelled(DatabaseError databaseError) {
            }
        });
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_SHORT).show();
+                    }
+                });
+
         //Toast.makeText(getApplicationContext(),friendImgLink,Toast.LENGTH_SHORT).show();
         final AlertDialog.Builder mBuilder1 = new AlertDialog.Builder(this);
         listViewchat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, final View view, final int position, long id) {
 
                 View dialogView = getLayoutInflater().inflate(R.layout.message,null);
                 mBuilder1.setView(dialogView);
@@ -349,20 +450,62 @@ public class MainActivity extends AppCompatActivity {
                 final EditText et_message_text = (EditText)dialogView.findViewById(R.id.reply_message_content);
                 final Button btn_send_message =(Button)dialogView.findViewById(R.id.reply_message);
                 final  TextView tvFriendMail=(TextView)view.findViewById(R.id.txtMessage);
-                progressBarmessage = (ProgressBar) dialogView.findViewById(R.id.progressBarmessage);
+                //bprogressBarmessage = (ProgressBar) dialogView.findViewById(R.id.progressBarmessage);
+                final int positionlistview = position;
+                //Toast.makeText(getApplication(),positionlistview+ "  ",Toast.LENGTH_SHORT).show();
+                final int stringlength=0;
+                final ImageView inComingPhoto=(ImageView)dialogView.findViewById(R.id.inComingPhotoMessage);
+                ly_photo=(LinearLayout)dialogView.findViewById(R.id.photolayout);
 
+                mRef.orderByChild("mail").equalTo(mAuth.getCurrentUser().getEmail())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                                                                    Map<String, String> mapUsername = (Map<String, String>) postSnapshot.getValue();
+                                                                    final String childurl="to_"+usrname;
                 final DatabaseReference ref3 =FirebaseDatabase.getInstance().getReference("messaging").child("messages").child(childurl);
                 ref3.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        DataSnapshot ds_Chat=dataSnapshot.child("from");
-                        for (DataSnapshot dsChat2: ds_Chat.getChildren()){
-                            final String chattext =dsChat2.getValue().toString();
-                            textt=chattext.substring(chattext.indexOf("_")+1,chattext.indexOf("__"));
-                            final String fromm=chattext.substring(0,chattext.indexOf("_"));
+                        DataSnapshot ds_Chat = dataSnapshot.child("from");
+                        for (DataSnapshot dsChat2 : ds_Chat.getChildren()) {
+                            List<String> texts = new ArrayList<String>();
+                            final String chattext = dsChat2.getValue().toString();
+                            textt = chattext.substring(chattext.indexOf("_") + 1, chattext.indexOf("__"));
+                            final String fromm = chattext.substring(0, chattext.indexOf("_"));
                             //final String timee=chattext.substring(chattext.indexOf("__"),chattext.length());
-                            newtextview.setText(textt);
-                            final String message1=et_message_text.getText().toString();
+                            String urlphoto = "_https://firebasestorage.googleapis.com";
+
+                           if(strings[positionlistview].length()>159){
+                               String onemli=strings[positionlistview].substring(0,urlphoto.length());
+                                if(onemli.equals(urlphoto)){
+
+
+                                    ly_photo.setVisibility(View.VISIBLE);
+                                    newtextview.setVisibility(View.INVISIBLE);
+                                    Uri myUri=Uri.parse(strings[positionlistview].substring(1,strings[positionlistview].length()));
+
+                                   Picasso.with(MainActivity.this)
+                                            .load(myUri)
+                                            .resize(768,1024)
+                                            .into(inComingPhoto);
+                                }
+                                else {
+                                    newtextview.setText(strings[positionlistview].substring(1,strings[positionlistview].length()));
+                                    ly_photo.setVisibility(View.INVISIBLE);
+                                    //Toast.makeText(getApplication(), onemli+"  ",Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            else {
+
+                                newtextview.setText(strings[positionlistview].substring(1,strings[positionlistview].length()));
+                               ly_photo.setVisibility(View.INVISIBLE);
+                                //Toast.makeText(getApplication(), strings[positionlistview].length() +"  ",Toast.LENGTH_SHORT).show();
+                            }
+
+
+                            final String message1 = et_message_text.getText().toString();
 
                             /*
                                        messageRef.child("messages").child("to_"+parsed).child("message").push().setValue(message);
@@ -370,70 +513,64 @@ public class MainActivity extends AppCompatActivity {
                                        messageRef.child("messages").child("to_"+parsed).child("time").push().setValue(currentTime.toString().substring(10,16));
                                         */
 
-                            progressBarmessage.setVisibility(View.VISIBLE);
+                           // progressBarmessage.setVisibility(View.VISIBLE);
                             btn_send_message.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     Date currentTime = Calendar.getInstance().getTime();
-                                    String message1=et_message_text.getText().toString();
-                                    messageRef.child("messages").child("to_"+tvFriendMail.getText().toString()).child("from").push().setValue(tvFriendMail.getText().toString() + "_" + message1 + "__"+  currentTime.toString().substring(11,16));
+                                    String message1 = et_message_text.getText().toString();
+                                    if(et_message_text.getText().toString().isEmpty())
+                                    {
+                                        Toast.makeText(getApplicationContext(), "Null text is not available :)", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else {
+                                        messageRef.child("messages").child("to_" + tvFriendMail.getText().toString()).child("from").push().setValue(usrname + "_" + message1 + "__" + currentTime.toString().substring(11, 16));
+                                        String message = et_message_text.getText().toString();
+                                        Toast.makeText(getApplicationContext(), chattext, Toast.LENGTH_SHORT).show();
 
-                                    String message=et_message_text.getText().toString();
-                                    Toast.makeText(getApplicationContext(),chattext,Toast.LENGTH_SHORT).show();
 
-                                    Query delete =ref3.child("from").orderByValue().equalTo(chattext);
-                                    delete.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
-                                                appleSnapshot.getRef().removeValue();
+                                        Query delete = ref3.child("from").orderByValue().equalTo(chattext);
+                                        delete.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                for (DataSnapshot appleSnapshot : dataSnapshot.getChildren()) {
+                                                    appleSnapshot.getRef().removeValue();
+                                                }
                                             }
-                                        }
 
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
 
-                                        }
-                                    });
+                                            }
+                                        });
 
-                                    dialogAddNewFriend.hide();
-                                    progressBarmessage.setVisibility(View.GONE);
-                                    et_message_text.setText("");
+                                        dialogAddNewFriend.hide();
+                                        //progressBarmessage.setVisibility(View.GONE);
+                                        et_message_text.setText("");
+                                    }
                                 }
                             });
                         }
                     }
+
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                     }
                 });
 
-                /*btn_send_message.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Date currentTime = Calendar.getInstance().getTime();
-                        String message=et_message_text.getText().toString();
+                                                                }
+                                                            }
 
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
-
-                    }
-                });*/
+                ////////
             }
         });
-    /*  final AlertDialog.Builder mBuilder1 = new AlertDialog.Builder(this);
-       listViewchat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-           @Override
-           public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-               View dialogView = getLayoutInflater().inflate(R.layout.message,null);
-               mBuilder1.setView(dialogView);
-               final AlertDialog dialogAddNewFriend= mBuilder1.create();
-               dialogAddNewFriend.show();
-               final EditText ed_msgContent=(EditText)findViewById(R.id.textView2);
-
-               Toast.makeText(getApplicationContext(),text,Toast.LENGTH_SHORT).show();
-               ed_msgContent.setText("selam");
-           }
-       });*/
+        Collections.reverse(texts);
         DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference("allUsers").child(mAuth.getCurrentUser().getUid());
         ref1.addValueEventListener(new ValueEventListener() {
             @Override
@@ -476,22 +613,49 @@ public class MainActivity extends AppCompatActivity {
                 View dialogView = getLayoutInflater().inflate(R.layout.send_message,null);
                 mBuilder.setView(dialogView);
                 final AlertDialog dialogAddNewFriend= mBuilder.create();
+
                 dialogAddNewFriend.show();
                 final  TextView tvFriendMail=(TextView)view.findViewById(R.id.textView2FrienMail);
                 final EditText et_message_text = (EditText)dialogView.findViewById(R.id.message_text);
-                final String parsed = tvFriendMail.getText().toString().substring(0,tvFriendMail.getText().toString().indexOf("@"));
+                final String parsed = tvFriendMail.getText().toString();
                 Button btn_send_message =(Button)dialogView.findViewById(R.id.send_message);
                 btn_send_message.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Date d = new Date();
 
-                        Date currentTime = Calendar.getInstance().getTime();
+                        final Date currentTime = Calendar.getInstance().getTime();
 
-                        String message=et_message_text.getText().toString();
+                        final String message=et_message_text.getText().toString();
 
-                        messageRef.child("messages").child("to_"+parsed).child("from").push().setValue(mAuth.getCurrentUser().getEmail().toString().substring(0,mAuth.getCurrentUser().getEmail().toString().indexOf("@")) + "_" + message + "__"+  currentTime.toString().substring(11,16));
-                        /*
+                        if(et_message_text.getText().toString().isEmpty())
+                        {
+                            Toast.makeText(getApplicationContext(), "Null text is not available :)", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+
+                            mRef.orderByChild("mail").equalTo(parsed)
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                            for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                                                Map<String, String> mapUsername = (Map<String, String>) postSnapshot.getValue();
+
+                                                oppositeusername=mapUsername.get("userName");
+                                                Toast.makeText(getApplicationContext(), oppositeusername, Toast.LENGTH_SHORT).show();
+                                                messageRef.child("messages").child("to_" + oppositeusername).child("from").push().setValue(usrname + "_" + message + "__" + currentTime.toString().substring(11, 16));
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                            Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                            //messageRef.child("messages").child("to_" + oppositeusername).child("from").push().setValue(usrname + "_" + message + "__" + currentTime.toString().substring(11, 16));
+                        }/*
                         messageRef.child("messages").child("to_"+parsed).child("message").push().setValue(message);
                         //messageRef.child("messages").child("to").push().setValue(tvFriendMail.getText().toString());
                         messageRef.child("messages").child("to_"+parsed).child("time").push().setValue(currentTime.toString().substring(10,16));
@@ -765,7 +929,25 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+        else if(requestCode==GALERI_INDEX2 && resultCode==RESULT_OK){
+            Uri uri = data.getData();
+
+            Date currentTime = Calendar.getInstance().getTime();
+            StorageReference path = mStorageRef.child("photomessage").child(mAuth.getCurrentUser().getEmail()+currentTime.toString());
+            path.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+
+                    Intent intent = new Intent(MainActivity.this, ChooseFriend.class);
+                    intent.putExtra("imagephoto",taskSnapshot.getDownloadUrl().toString());
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }
     }
+
 }
 
 

@@ -4,13 +4,19 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:text="Add Friend"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="" />
+
+    <TextView
         android:id="@+id/textView"
-        android:textSize="15pt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/acme"
+        android:text="Add Friend"
         android:textAlignment="center"
-        android:textColor="@color/colorPrimary"/>
+        android:textColor="@color/casper_red"
+        android:textSize="15pt" />
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -20,20 +26,29 @@
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
         >
+
         <EditText
+            android:id="@+id/friendMail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/friendMail"
+            android:fontFamily="@font/acme"
             android:paddingLeft="10px"
-            android:paddingRight="10px"/>
+            android:paddingRight="10px" />
     </android.support.design.widget.TextInputLayout>
 
     <Button
+        android:id="@+id/addFriendButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add"
-        android:id="@+id/addFriendButton"
         android:layout_marginLeft="20pt"
         android:layout_marginRight="20pt"
-        />
+        android:fontFamily="@font/acme"
+        android:textColor="@color/white"
+        android:background="@color/casper_red"
+        android:text="Add" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="" />
 </LinearLayout>
