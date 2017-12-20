@@ -1,0 +1,26 @@
+{
+  "allUsers" : {
+    "1dM3CsC1EYUhxkB6oSRn0z1Bmsb2" : {
+      "friends" : {
+        "-L0Ulz5a44AxkdT0a3x3" : "emirhan.ozsoy@gmail.com"
+      },
+      "mail" : "emirhan55@hotmail.com",
+      "userImage" : "https://firebasestorage.googleapis.com/v0/b/casperchat865.appspot.com/o/userimages%2Femirhan55%40hotmail.com?alt=media&token=c0f2c1b2-be24-4988-93a9-7942549c468b",
+      "userName" : "emirhan55"
+    },
+  "messaging" : {
+    "messages" : {
+      "to_denemee" : {
+        "from" : {
+          "-L0f0HsjBsfmTPazirxk" : "goldenking_hey__21:06"
+        }
+      },
+      "to_goldenking" : {
+        "from" : {
+          "-L0ewKjuGSIch3frPIGu" : "denemee_selam__20:44",
+          "-L0f8FHVGlTbDKCrSG2A" : "denemee_https://firebasestorage.googleapis.com/v0/b/casperchat865.appspot.com/o/photomessage%2Fbenden%40gmail.comMon%20Dec%2018%2021%3A41%3A08%20GMT%2B02%3A00%202017?alt=media&token=5457aec7-a45d-42d8-850d-acc7f5b7814a__21:41"
+        }
+      }
+    }
+  }
+}
